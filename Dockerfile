@@ -1,19 +1,17 @@
 # Taking NGINX as base image
 FROM nginx:stable
 
-# Adding labels
-LABEL "com.umlatt.description"="VDO Ninja (No SSL)"
-LABEL "maintainer"="Your Name <your.email@example.com>"
+# Install git for cloning VDO.ninja
+RUN apt update && apt install -y git && apt clean
 
-# Get vdo.ninja webserver files
-COPY ./vdo.ninja /var/www/html/vdo.ninja
+# Clone VDO.ninja repository directly into the container
+RUN git clone https://github.com/steveseguin/vdo.ninja.git /var/www/html/vdo.ninja
 
 # Add copy of default nginx conf file
 COPY default.conf /etc/nginx/conf.d/.
 
 # Add modified entrypoint script
-COPY ./init/entrypoint.sh /init/entrypoint.sh
-RUN chmod +x /init/entrypoint.sh
+COPY ./init/entrypoint.sh /init/
 
 # Configure working directory
 WORKDIR /var/www/html
